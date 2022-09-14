@@ -1,3 +1,15 @@
-h1 {
-	font-family: Helvetica, Arial, sans-serif;
+.hard-drive-container {
+	display: block;
+	position: relative;
+	width: 50%;
+	margin: 0 auto;
 }
+
+svg .hard-drive-box {
+	fill: antiquewhite;
+}
+
+svg .hard-drive-disk {
+	stroke: black; /* TODO: replace */
+}
+
