@@ -3,7 +3,7 @@
 
 {% block page_head %}
 <link rel="stylesheet" type="text/css" href="{% static 'cs_attrition_viz/population.css' %}">
-<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 {% endblock %}
 
 {% block page_content %}
@@ -16,39 +16,91 @@
 </div>
 
 <script>
-	var hard_drive_width = 350;
-	var hard_drive_height = 200;
-	var hard_drive_border_radius = hard_drive_width / 50;
+	var hardDriveWidth = 350;
+	var hardDriveHeight = 200;
+	var hardDriveBorderRadius = hardDriveWidth / 50;
 
 	// Colors taken from https://www.telegraph.co.uk/women/business/women-mean-business-interactive/
-	var color_men = "#00C4AA";
-	var color_women = "#8700F9";
+	var colorMen = "#00C4AA";
+	var colorWomen = "#8700F9";
 
-	var hard_drive_box = d3.select("div#hardDriveId")
+	var hardDriveBox = d3.select("div#hardDriveId")
 		.append("svg")
-		.attr("viewBox", "0 0 " + hard_drive_width + " " + hard_drive_height)
+		.attr("viewBox", "0 0 " + hardDriveWidth + " " + hardDriveHeight)
 		.attr("preserveAspectRatio", "xMinYMin meet")
 		.classed("hard-drive-container", true)
 		.append("rect")
 		.classed("hard-drive-box", true)
-		.attr("width", hard_drive_width)
-		.attr("height", hard_drive_height)
-		.attr("rx", hard_drive_border_radius)
-		.attr("ry", hard_drive_border_radius);
+		.attr("width", hardDriveWidth)
+		.attr("height", hardDriveHeight)
+		.attr("rx", hardDriveBorderRadius)
+		.attr("ry", hardDriveBorderRadius);
 
-	Promise.all([
-		d3.json("{% url 'get_womens_data' %}"),
-		d3.json("{% url 'get_mens_data' %}"),
-	]).then(([womens_data, mens_data]) => {
-		// ready(null, womens_data, mens_data);
-		// womens_data.forEach(function(d, i) {
-		// 	console.log(d.year);
-		// });
-		console.log("success");
-	});
+	d3.queue()
+		.defer(d3.json, "{% url 'get_womens_data' %}")
+		.defer(d3.json, "{% url 'get_mens_data' %}")
+		.await(createPieChart);
 
 	// var donut_chart = d3.pie()
 	// 	.sort(null);
+
+	const years_to_gender_pops = {};
+
+	function createPieChart(error, csWomen, csMen) {
+		if (error) throw error;
+
+		getYearPopulations(csWomen, csMen);
+		
+		var donut_chart = d3.pie()
+			.sort(null)
+			.value(function(d) { return d.population } );
+
+		
+	}
+
+	function getYearPopulations(csWomen, csMen) {
+		const years = [];
+		const woman_pops = [];
+		const man_pops = [];
+
+		// csWomen.forEach(function(d, i) {
+		// 	if (d.num_employees_nsf) {
+		// 		years.push(d.year);
+		// 		woman_pops.push(d.num_employees_nsf);
+		// 	}
+		// });
+
+		// csMen.forEach(function(d, i) {
+		// 	console.log(d);
+		// 	if (years.includes(d.year_id)) {
+		// 		man_pops.push(d.num_employees_nsf);
+		// 	}
+		// });
+
+		csWomen.forEach(function(d, i) {
+			if (d.num_employees_nsf) {
+				years.push(d.year);
+				woman_pops.push(d.num_employees_nsf);
+			}
+		});
+
+		csMen.forEach(function(d, i) {
+			console.log(d);
+			if (years.includes(d.year_id)) {
+				man_pops.push(d.num_employees_nsf);
+			}
+		});
+
+		for (let i = 0; i < years.length; i++) {
+			const women_to_pops = {"gender": "women"};
+			const men_to_pops = {"gender": "men"};
+			women_to_pops.population = woman_pops[i];
+			men_to_pops.population = man_pops[i];
+			years_to_gender_pops[years[i]] = [women_to_pops, men_to_pops];
+		}
+
+		console.log(years_to_gender_pops);
+	}
 
 </script>
 {% endblock %}

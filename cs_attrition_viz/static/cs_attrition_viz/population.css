@@ -6,11 +6,10 @@
 }
 
 svg .hard-drive-box {
-	fill: antiquewhite;
+	fill: slategrey;
 }
 
 svg .hard-drive-disk {
 	position: relative;
 	stroke: black; /* TODO: replace */
 }
-

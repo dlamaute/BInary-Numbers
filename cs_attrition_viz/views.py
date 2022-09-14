@@ -17,7 +17,7 @@ def cs_attrition_salary(request):
 
 def get_womens_data(request):
 	women = models.CsWomen.objects.all().values()
-	return JsonResponse(women)
+	return JsonResponse(list(women), safe=False)
 
 
 def get_mens_data(request):
@@ -26,4 +26,4 @@ def get_mens_data(request):
 	# 	'women': women,
 	# 	'men': men
 	# }
-	return JsonResponse(men)
+	return JsonResponse(list(men), safe=False)
