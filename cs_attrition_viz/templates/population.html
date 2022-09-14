@@ -3,7 +3,7 @@
 
 {% block page_head %}
 <link rel="stylesheet" type="text/css" href="{% static 'cs_attrition_viz/population.css' %}">
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
 {% endblock %}
 
 {% block page_content %}
@@ -20,7 +20,11 @@
 	var hard_drive_height = 200;
 	var hard_drive_border_radius = hard_drive_width / 50;
 
-	d3.select("div#hardDriveId")
+	// Colors taken from https://www.telegraph.co.uk/women/business/women-mean-business-interactive/
+	var color_men = "#00C4AA";
+	var color_women = "#8700F9";
+
+	var hard_drive_box = d3.select("div#hardDriveId")
 		.append("svg")
 		.attr("viewBox", "0 0 " + hard_drive_width + " " + hard_drive_height)
 		.attr("preserveAspectRatio", "xMinYMin meet")
@@ -31,5 +35,20 @@
 		.attr("height", hard_drive_height)
 		.attr("rx", hard_drive_border_radius)
 		.attr("ry", hard_drive_border_radius);
+
+	Promise.all([
+		d3.json("{% url 'get_womens_data' %}"),
+		d3.json("{% url 'get_mens_data' %}"),
+	]).then(([womens_data, mens_data]) => {
+		// ready(null, womens_data, mens_data);
+		// womens_data.forEach(function(d, i) {
+		// 	console.log(d.year);
+		// });
+		console.log("success");
+	});
+
+	// var donut_chart = d3.pie()
+	// 	.sort(null);
+
 </script>
 {% endblock %}
