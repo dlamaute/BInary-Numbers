@@ -10,6 +10,7 @@ svg .hard-drive-box {
 }
 
 svg .hard-drive-disk {
+	position: relative;
 	stroke: black; /* TODO: replace */
 }
 

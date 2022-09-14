@@ -2,11 +2,11 @@
 {% load static %}
 
 {% block page_head %}
-	<link rel="stylesheet" type="text/css" href="{% static 'cs_attrition_viz/population.css' %}">
-	<script src="https://d3js.org/d3.v4.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'cs_attrition_viz/population.css' %}">
+<script src="https://d3js.org/d3.v4.min.js"></script>
 {% endblock %}
 
-{% block content %}
+{% block page_content %}
 <h1>Populations</h1>
 
 <div id="hardDriveId"></div>
@@ -16,19 +16,20 @@
 </div>
 
 <script>
-	var width = 350;
-	var height = 200;
+	var hard_drive_width = 350;
+	var hard_drive_height = 200;
+	var hard_drive_border_radius = hard_drive_width / 50;
 
 	d3.select("div#hardDriveId")
 		.append("svg")
-		.attr("viewBox", "0 0 " + width + " " + height)
+		.attr("viewBox", "0 0 " + hard_drive_width + " " + hard_drive_height)
 		.attr("preserveAspectRatio", "xMinYMin meet")
 		.classed("hard-drive-container", true)
 		.append("rect")
 		.classed("hard-drive-box", true)
-		.attr("width", width)
-		.attr("height", height)
-		.attr("rx", width / 50)
-		.attr("ry", width / 50);
+		.attr("width", hard_drive_width)
+		.attr("height", hard_drive_height)
+		.attr("rx", hard_drive_border_radius)
+		.attr("ry", hard_drive_border_radius);
 </script>
 {% endblock %}
