@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block page_content %}
-<h1>Reformatting the Workforce</h1>
+<h1>Poorly Reformatting the Workforce</h1>
 
 <div class="two-col-container">
 	<div class="detail">
@@ -36,8 +36,6 @@
 
 	const transitionDuration = 500;
 
-	// var year = 2008; // TODO: temporary until I set up scroll
-
 	var hardDriveContainer = d3.select("#hard-drive-id")
 		.append("svg")
 		.attr("viewBox", "0 0 " + hardDriveWidth + " " + hardDriveHeight)
@@ -51,36 +49,17 @@
 		.attr("rx", hardDriveBorderRadius)
 		.attr("ry", hardDriveBorderRadius);
 
-	console.log(hardDriveContainer.node().nodeName);  // TODO: remove
-
-	var donutChartContainer = hardDriveContainer.append("g")
-		.attr("transform", "translate(" + ( 2 * hardDriveWidth / 3 ) + "," + hardDriveHeight / 2 + ")");
-
 	var anchorPath = d3.path();
 	anchorPath.moveTo(hardDriveWidth / 12, hardDriveHeight / 18);
 	anchorPath.lineTo(hardDriveWidth / 3, hardDriveHeight / 18);
-	// anchorPath.lineTo(hardDriveWidth / 3, hardDriveHeight / 11);
 	anchorPath.arc(hardDriveWidth / 2, hardDriveHeight / 2, hardDriveHeight / 2 - hardDriveDiskVerticalMargin, (3 * Math.PI / 2), Math.PI, true);
 	anchorPath.lineTo(hardDriveWidth / 12, hardDriveHeight / 2);
-	// anchorPath.lineTo(hardDriveWidth / 12, hardDriveHeight / 16);
 	anchorPath.closePath();
 
 	hardDriveContainer.append("path")
 		.attr("d", anchorPath)
 		.attr("stroke", "black")
 		.attr("fill", "#607080");
-
-	var needlePath = d3.path();
-	needlePath.moveTo(hardDriveWidth / 6 + hardDriveNeedleOffset, hardDriveHeight / 5);
-	needlePath.lineTo(hardDriveWidth / 2, hardDriveHeight / 2);
-	needlePath.lineTo(hardDriveWidth / 6 - hardDriveNeedleOffset, hardDriveHeight / 5 + hardDriveNeedleOffset);
-	needlePath.arcTo(hardDriveWidth / 6 - hardDriveNeedleOffset, hardDriveHeight / 5 - hardDriveNeedleOffset, hardDriveWidth / 6 + hardDriveNeedleOffset, hardDriveHeight / 5, hardDriveNeedleOffset);
-	needlePath.closePath();
-
-	hardDriveContainer.append("path")
-		.attr("d", needlePath)
-		.attr("stroke", "black")
-		.attr("fill", "lightgray");
 
 	// Hard Drive Rivets
 	hardDriveContainer.append("circle")
@@ -111,6 +90,19 @@
 		.attr("stroke", "black")
 		.attr("fill", "#607080");
 
+	var donutChartContainer = hardDriveContainer.append("g")
+		.attr("transform", "translate(" + ( 2 * hardDriveWidth / 3 ) + "," + hardDriveHeight / 2 + ")");
+
+	var donutChart = d3.pie()
+		.sort(null)
+		.value(function(d) { return d.population; } )
+		.startAngle((3 * Math.PI) / 2)
+		.endAngle((7 * Math.PI) / 2);
+
+	var arc = d3.arc()
+		.innerRadius(hardDriveHeight / 4 - hardDriveDiskVerticalMargin)
+		.outerRadius(hardDriveHeight / 2 - hardDriveDiskVerticalMargin);
+
 	d3.queue()
 		.defer(d3.json, "{% url 'womens_data' %}")
 		.defer(d3.json, "{% url 'mens_data' %}")
@@ -121,50 +113,105 @@
 
 		const yearsToGenderPops = getAllYearsPopulations(csWomen, csMen);
 
-		var arc = d3.arc()
-			.innerRadius(hardDriveHeight / 4 - hardDriveDiskVerticalMargin)
-			.outerRadius(hardDriveHeight / 2 - hardDriveDiskVerticalMargin);
-
 		const years = Object.keys(yearsToGenderPops);
 		const startYear = years[0];
 		const endYear = years[years.length - 1];
 		const yearSlider = sliderFactory()
 			.width(hardDriveWidth)
 			.height(yearSliderHeight)
-			.value(2000)
+			.value(parseInt(startYear))
 			.ticks(100)
 			.scale(true)
 			.customTicks(years)
 			.range([startYear, endYear])
 			.step(1)
-			.dragHandler(function(d) { updatePie(d); });
+			.dragHandler(function(d) { updatePie(d.value()); });
 		let yearSliderContainer = d3.select("#year-slider-id")
 			.call(yearSlider)
 			.classed("sub-viz-container", true);
 		yearSliderContainer.append("div").classed("slider-label", true).text("Year");
 
-		function updatePie(yearContainer) {
-			var donutChart = d3.pie()
-				.sort(null)
-				.value(function(d) { return d.population; } )
-				.startAngle((3 * Math.PI) / 2)
-				.endAngle((7 * Math.PI) / 2);
+		updatePie(startYear);
 
-			const arcs = donutChart(yearsToGenderPops[yearContainer.value()]);
-
-			donutChartContainer.append("g")
+		function updatePie(year) {
+			var donutChartPath = donutChartContainer.append("g")
 				.classed("hard-drive-disk", true)
-				.selectAll("path")
-				.data(arcs)
-				.enter()
+				.selectAll("path");
+
+			var originalData = donutChartPath.data();
+			var newData = donutChart(yearsToGenderPops[year]);
+
+			donutChartPath = donutChartPath.data(newData);
+
+			// TODO: remove these
+			console.log(originalData);
+			console.log(newData);
+
+			// const arcs = donutChart(yearsToGenderPops[year]);
+			// replace thing here
+			//	.data(arcs)
+
+			donutChartPath.transition()
+				.duration(transitionDuration)
+				.attrTween("d", arcTween)
+
+			donutChartPath.enter()
 				.append("path")
+				.each(function(d, i) {
+					console.log(d);
+					var neighborArc = findNeighborArc(i, originalData, newData);
+					if (neighborArc) {
+						this._current = neighborArc;
+						this._previous = neighborArc;
+					}
+					else {
+						this._current = d;
+					}
+				})
 				.attr("fill", function(d, i) {
 					if (d.data.gender == "women") {
 						return colorWomen;
 					}
 					return colorMen;
 				})
-				.attr("d", arc);
+				.transition()
+				.duration(transitionDuration)
+				.attrTween("d", arcTween)
+				// .attr("d", arc);
+
+			donutChartPath.exit()
+				.transition()
+				.duration(transitionDuration)
+				.attrTween("d", function(d, i) {
+					var currentIndex = this._previous.data.year;
+					var interpolator = d3.interpolateObject(d, this._previous);
+					return function(t) {
+						return arc(interpolator(t));
+					}
+				})
+				.remove();
+
+		var needlePath = d3.path();
+			needlePath.moveTo(hardDriveWidth / 6 + hardDriveNeedleOffset, hardDriveHeight / 5);
+			needlePath.lineTo(hardDriveWidth / 2, hardDriveHeight / 2);
+			needlePath.lineTo(hardDriveWidth / 6 - hardDriveNeedleOffset, hardDriveHeight / 5 + hardDriveNeedleOffset);
+			needlePath.arcTo(hardDriveWidth / 6 - hardDriveNeedleOffset, hardDriveHeight / 5 - hardDriveNeedleOffset, hardDriveWidth / 6 + hardDriveNeedleOffset, hardDriveHeight / 5, hardDriveNeedleOffset);
+			needlePath.closePath();
+
+			hardDriveContainer.append("path")
+				.attr("d", needlePath)
+				.attr("stroke", "black")
+				.attr("fill", "lightgray");
+		}
+
+		function findNeighborArc(index, originalData, newData) {
+			var datum = findFollowing(index, originalData, newData);
+			if (datum) {
+				var datumClone = basicCloneObject(datum);
+				datumClone.endAngle = datum.startAngle;
+				return datumClone;
+			}
+			return null;
 		}
 
 	}
@@ -197,6 +244,33 @@
 		}
 
 		return yearsToGenderPops;
+	}
+
+	function findFollowing(index, originalData, newData) {
+		var newDataLength = newData.length;
+		var originalDataLength = originalData.length;
+		while (++index < newDataLength) {
+			for (var j = 0; j < originalDataLength; ++j) {
+				if (originalData[j] === newData[i]) return originalData[j];
+			}
+		}
+
+	}
+
+	function arcTween(d) {
+		var interpolator = d3.interpolate(this._current, d);
+		this._current = interpolator(0);
+		return function(t) {
+			return arc(interpolator(t));
+		}
+	}
+
+	function basicCloneObject(originalObject) {
+		var newObject = {};
+		for (var i in originalObject) {
+			newObject[i] = originalObject[i];
+		}
+		return newObject;
 	}
 
 </script>
