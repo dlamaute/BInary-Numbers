@@ -23,7 +23,6 @@ function sliderFactory(d) {
 
   // var parseNum = d3.format(".2g"); /* Commented out by Sid Lamaute */
   var parseNum = d3.format("d"); /* Added by Sid Lamaute */
-  console.log(parseNum(2005));
 
   const sliderNumberFormat = {
     'decimal': '.',
@@ -45,8 +44,10 @@ function sliderFactory(d) {
       //console.log("parametres",width,height,range,p);
       
       svg = p.append("svg")
-      svg.attr("width", width)
-      .attr("height", height)
+      svg.attr("viewBox", "0 0 " + width + " " + height)
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        // .attr("width", width)
+        // .attr("height", height)
 
       let track = svg.append("g")
         .attr("class", "slider")
@@ -66,10 +67,12 @@ function sliderFactory(d) {
           .attr("class", "track")
           .attr("x1", sliderScale.range()[0])
           .attr("x2", sliderScale.range()[1])
-        .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-          .attr("class", "track-overlay")
-          .attr("x1", sliderScale.range()[0])
-          .attr("x2", sliderScale(value))
+        /* Commented out by Sid Lamaute */
+        // .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+        //   .attr("class", "track-overlay")
+        //   .attr("x1", sliderScale.range()[0])
+        //   .attr("x2", sliderScale(value))
+        /* End Comment by Sid Lamaute */
       }
       if (orient=="vertical") {
         track.append("line")
@@ -95,7 +98,7 @@ function sliderFactory(d) {
             );
         }
         else {
-        /* End of Added by Sid Lamaute */
+        /* End Added by Sid Lamaute */
           let axis=track.append("g")
           .attr("class", "sliderAxis")
           .attr("transform", axisTranslation(orient))
@@ -111,7 +114,7 @@ function sliderFactory(d) {
         .attr("transform", transHandle(orient))
 
       handle.append("circle")
-        .attr("r", 12)
+        .attr("r", 8)
       if(label) {addLabel(handle)}
 
       called=true
@@ -119,7 +122,12 @@ function sliderFactory(d) {
       function dragSlider(svg) {
         let slider=d3.select(svg)
         let d = getMousePos(orient);
-        rounded = d + step/2 - (d+step/2) % step;
+        if (customTicks) {
+          rounded = d + step/2 - (d+step/2) % step; // TODO: change
+        }
+        else {
+          rounded = d + step/2 - (d+step/2) % step;
+        }
         console.log("rounded",rounded)
         let handle=slider.selectAll(".handle")
           .attr("transform", transHandle(orient))
@@ -163,7 +171,7 @@ function sliderFactory(d) {
             );
         }
         else {
-        /* End of Added by Sid Lamaute */
+        /* End Added by Sid Lamaute */
           let axis=svg.selectAll(".sliderAxis")
             .call(d3[axisType](sliderScale)
               .tickSize(8)
@@ -185,7 +193,7 @@ function sliderFactory(d) {
         "horizontal":sliderScale.invert(d3.event.x-20),
         "vertical":sliderScale.invert(d3.event.y-20)
       }[orient]
-      }
+    }
     
     function addLabel(handle){
       handle.append("rect")

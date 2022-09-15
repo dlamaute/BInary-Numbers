@@ -11,13 +11,11 @@
 {% block page_content %}
 <h1>Populations</h1>
 
-<div id="pop-visual-id">
-	<div id="hard-drive-id"></div>
-	<div id="year-slider-id"></div>
-</div>
+<div id="hard-drive-id"></div>
+<div id="year-slider-id"></div>
 
 <div class="detail">
-	<p>Explanation</p>
+	<p class="detail-text">Explanation</p>
 </div>
 
 <script>
@@ -25,13 +23,19 @@
 	var hardDriveHeight = 200;
 	var hardDriveBorderRadius = hardDriveWidth / 50;
 	var hardDriveDiskVerticalMargin = 10;
-	var yearSliderHeight = 8;
+	var yearSliderHeight = 60;
 
 	/* Colors borrowed from https://www.telegraph.co.uk/women/business/women-mean-business-interactive/ */
 	var colorWomen = "#8700F9";
 	var colorMen = "#00C4AA";
 
 	var year = 2008; // TODO: temporary until I set up scroll
+
+	// var populationVizContainer = d3.select("#pop-visual-id")
+	// 	.append("svg")
+	// 	.attr("viewBox", "0 0 " + hardDriveWidth + " " + hardDriveHeight + yearSliderHeight)
+	// 	.attr("preserveAspectRatio", "xMinYMin meet")
+	// 	.classed("viz-container", true);
 
 	var hardDriveContainer = d3.select("#hard-drive-id")
 		.append("svg")
@@ -93,6 +97,8 @@
 		const startYear = years[0];
 		const endYear = years[years.length - 1];
 		const yearSlider = sliderFactory()
+			.width(hardDriveWidth)
+			.height(yearSliderHeight)
 			.ticks(100)
 			.scale(true)
 			.customTicks(years)
@@ -100,8 +106,7 @@
 			.step(1);
 		let yearSliderContainer = d3.select("#year-slider-id")
 			.call(yearSlider)
-			.attr("viewBox", "0 0 " + hardDriveWidth + " " +yearSliderHeight)
-			.attr("preserveAspectRatio", "xMinYMin meet").classed("viz-container", true);
+			.classed("viz-container", true);
 		yearSliderContainer.append("div").classed("slider-label", true).text("Year");
 
 	}

@@ -1,5 +1,5 @@
 body {
-  font-family: MetricWeb, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   margin: 0 auto;
   }
@@ -20,13 +20,13 @@ p {
 }
 
 .sliderAxis text{
-  font-size: 16px;
-  fill: #b8b1a9;
+  font-size: 10px;
+  fill: slategray;
   font-weight: 400;
 }
 .sliderAxis line{
   fill: none;
-  stroke: #b8b1a9;
+  stroke: slategray;
   stroke-width: 1px;
 }
 .sliderAxis .domain{
@@ -41,7 +41,7 @@ p {
 }
 
 .track {
-  stroke: #b8b1a9;
+  stroke: slategray;
   stroke-width: 4px;
   cursor: pointer;
 }
@@ -51,27 +51,27 @@ p {
   stroke-width: 50px;
 }*/
 
-.track-overlay {
+/*.track-overlay {
   stroke: #A5526A;
   stroke-width: 4px;
-}
+}*/
 
 .handle {
   fill: #ffffff;
   stroke: #A5526A;
-  stroke-width: 4px;
+  stroke-width: 3px;
   cursor: pointer;
 }
 
 .label {
-  fill: #b8b1a9;
+  fill: slategray;
   stroke: none;
 }
 .labelText {
   fill: #ffffff;
   stroke: none;
-  font-size: 16px;
-  font-weight: 400;
+  font-size: 10px;
+  font-weight: normal;
   text-anchor: middle;
 }
 
