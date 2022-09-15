@@ -15,12 +15,12 @@ def cs_attrition_salary(request):
 	return render(request, 'salary.html', {})
 
 
-def get_womens_data(request):
+def womens_data(request):
 	women = models.CsWomen.objects.all().values()
 	return JsonResponse(list(women), safe=False)
 
 
-def get_mens_data(request):
+def mens_data(request):
 	men = models.CsMen.objects.all().values()
 	# context = {
 	# 	'women': women,

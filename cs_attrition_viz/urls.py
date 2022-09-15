@@ -7,6 +7,6 @@ urlpatterns = [
 	path('', views.cs_attrition_home, name='home'),
 	path('population/', views.cs_attrition_population, name='population'),
 	path('salary/', views.cs_attrition_salary, name='salary'),
-	path('api/get_womens_data', views.get_womens_data, name='get_womens_data'),
-	path('api/get_mens_data', views.get_mens_data, name='get_mens_data'),
+	path('api/womens_data', views.womens_data, name='womens_data'),
+	path('api/mens_data', views.mens_data, name='mens_data'),
 ]

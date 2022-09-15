@@ -2,14 +2,17 @@
 {% load static %}
 
 {% block page_head %}
-<link rel="stylesheet" type="text/css" href="{% static 'cs_attrition_viz/population.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'cs_attrition_viz/css/population.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'cs_attrition_viz/css/sliders.css' %}">
 <script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="{% static 'cs_attrition_viz/js/slider.js' %}"></script>
 {% endblock %}
 
 {% block page_content %}
 <h1>Populations</h1>
 
 <div id="hardDriveId"></div>
+<div id="yearSliderId"></div>
 
 <div class="detail">
 	<p>Explanation</p>
@@ -19,88 +22,116 @@
 	var hardDriveWidth = 350;
 	var hardDriveHeight = 200;
 	var hardDriveBorderRadius = hardDriveWidth / 50;
+	var hardDriveDiskVerticalMargin = 10;
+	var yearSliderHeight = 8;
 
 	// Colors taken from https://www.telegraph.co.uk/women/business/women-mean-business-interactive/
-	var colorMen = "#00C4AA";
 	var colorWomen = "#8700F9";
+	var colorMen = "#00C4AA";
 
-	var hardDriveBox = d3.select("div#hardDriveId")
+	var year = 2008; // TODO: temporary until I set up scroll
+
+	var hardDriveContainer = d3.select("#hardDriveId")
 		.append("svg")
 		.attr("viewBox", "0 0 " + hardDriveWidth + " " + hardDriveHeight)
 		.attr("preserveAspectRatio", "xMinYMin meet")
-		.classed("hard-drive-container", true)
-		.append("rect")
+		.classed("hard-drive-container", true);
+
+	var hardDriveBox = hardDriveContainer.append("rect")
 		.classed("hard-drive-box", true)
 		.attr("width", hardDriveWidth)
 		.attr("height", hardDriveHeight)
 		.attr("rx", hardDriveBorderRadius)
 		.attr("ry", hardDriveBorderRadius);
 
+	console.log(hardDriveContainer.node().nodeName);  // TODO: remove
+
+	var donutChartContainer = hardDriveContainer.append("g")
+		.attr("transform", "translate(" + ( 2 * hardDriveWidth / 3 ) + "," + hardDriveHeight / 2 + ")");
+
 	d3.queue()
-		.defer(d3.json, "{% url 'get_womens_data' %}")
-		.defer(d3.json, "{% url 'get_mens_data' %}")
+		.defer(d3.json, "{% url 'womens_data' %}")
+		.defer(d3.json, "{% url 'mens_data' %}")
 		.await(createPieChart);
-
-	// var donut_chart = d3.pie()
-	// 	.sort(null);
-
-	const years_to_gender_pops = {};
 
 	function createPieChart(error, csWomen, csMen) {
 		if (error) throw error;
 
-		getYearPopulations(csWomen, csMen);
+		const yearsToGenderPops = getAllYearsPopulations(csWomen, csMen);
 		
-		var donut_chart = d3.pie()
+		var donutChart = d3.pie()
 			.sort(null)
-			.value(function(d) { return d.population } );
+			.value(function(d) { return d.population; } )
+			.startAngle((3 * Math.PI) / 2)
+			.endAngle((7 * Math.PI) / 2);
 
-		
+		var arc = d3.arc()
+			.innerRadius(hardDriveHeight / 4 - hardDriveDiskVerticalMargin)
+			.outerRadius(hardDriveHeight / 2 - hardDriveDiskVerticalMargin);
+
+		const arcs = donutChart(yearsToGenderPops[year]);
+
+		donutChartContainer.append("g")
+			.attr("stroke", "white")
+			.selectAll("path")
+			.data(arcs)
+			.enter()
+			.append("path")
+			.attr("fill", function(d, i) {
+				if (d.data.gender == "women") {
+					return colorWomen;
+				}
+				return colorMen;
+			})
+			.attr("d", arc);
+
+		console.log("made donut chart");  // TODO: remove
+
+		const years = Object.keys(yearsToGenderPops);
+		const startYear = years[0];
+		const endYear = years[years.length - 1];
+		console.log(startYear);
+		console.log(endYear);
+		const yearSlider = sliderFactory()
+			.scale(true)
+			.customTicks(years)
+			.label(true);
+		let yearSliderContainer = d3.select("#yearSliderId").call(yearSlider);
+
 	}
 
-	function getYearPopulations(csWomen, csMen) {
+	function getAllYearsPopulations(csWomen, csMen) {
 		const years = [];
-		const woman_pops = [];
-		const man_pops = [];
-
-		// csWomen.forEach(function(d, i) {
-		// 	if (d.num_employees_nsf) {
-		// 		years.push(d.year);
-		// 		woman_pops.push(d.num_employees_nsf);
-		// 	}
-		// });
-
-		// csMen.forEach(function(d, i) {
-		// 	console.log(d);
-		// 	if (years.includes(d.year_id)) {
-		// 		man_pops.push(d.num_employees_nsf);
-		// 	}
-		// });
+		const womanPops = [];
+		const manPops = [];
+		const yearsToGenderPops = {};
 
 		csWomen.forEach(function(d, i) {
 			if (d.num_employees_nsf) {
 				years.push(d.year);
-				woman_pops.push(d.num_employees_nsf);
+				womanPops.push(d.num_employees_nsf);
 			}
 		});
 
 		csMen.forEach(function(d, i) {
-			console.log(d);
 			if (years.includes(d.year_id)) {
-				man_pops.push(d.num_employees_nsf);
+				manPops.push(d.num_employees_nsf);
 			}
 		});
 
 		for (let i = 0; i < years.length; i++) {
-			const women_to_pops = {"gender": "women"};
-			const men_to_pops = {"gender": "men"};
-			women_to_pops.population = woman_pops[i];
-			men_to_pops.population = man_pops[i];
-			years_to_gender_pops[years[i]] = [women_to_pops, men_to_pops];
+			const womenToPops = {"gender": "women"};
+			const menToPops = {"gender": "men"};
+			womenToPops.population = womanPops[i];
+			menToPops.population = manPops[i];
+			yearsToGenderPops[years[i]] = [womenToPops, menToPops];
 		}
 
-		console.log(years_to_gender_pops);
+		return yearsToGenderPops;
 	}
-
 </script>
 {% endblock %}
+
+{% comment %}
+Pie chart adopted from: https://bl.ocks.org/tezzutezzu/c2653d42ffb4ecc01ffe2d6c97b2ee5e
+{% endcomment %}
