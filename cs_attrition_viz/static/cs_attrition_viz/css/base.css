@@ -14,10 +14,14 @@ h1 {
 	text-align: center;
 }
 
+.two-col-container {
+	display: grid;
+	grid-template-columns: 2fr 3fr;
+	grid-gap: 2%;
+}
+
 .detail {
-	display: inline-block;
 	position: relative;
-	width: 50%;
 	margin-top: 0;
 	margin-left: 5%;
 }

@@ -11,11 +11,10 @@
 {% block page_content %}
 <h1>Populations</h1>
 
-<div>
+<div class="two-col-container">
 	<div class="detail">
 		<p class="detail-text">Explanation</p>
 	</div>
-
 	<div class="viz-container">
 		<div id="hard-drive-id"></div>
 		<div id="year-slider-id"></div>
@@ -28,11 +27,12 @@
 	const hardDriveBorderRadius = hardDriveWidth / 50;
 	const hardDriveDiskVerticalMargin = 10;
 	const hardDriveNeedleOffset = 5;
+	const hardDriveRivetRadius = 6;
 	const yearSliderHeight = 60;
 
 	/* Colors borrowed from https://www.telegraph.co.uk/women/business/women-mean-business-interactive/ */
-	var colorWomen = "#8700F9";
-	var colorMen = "#00C4AA";
+	const colorWomen = "#8700F9";
+	const colorMen = "#00C4AA";
 
 	var year = 2008; // TODO: temporary until I set up scroll
 
@@ -55,12 +55,12 @@
 		.attr("transform", "translate(" + ( 2 * hardDriveWidth / 3 ) + "," + hardDriveHeight / 2 + ")");
 
 	var anchorPath = d3.path();
-	anchorPath.moveTo(hardDriveWidth / 12, hardDriveHeight / 12);
-	anchorPath.lineTo(hardDriveWidth / 3, hardDriveHeight / 12);
-	anchorPath.lineTo(hardDriveWidth / 3, hardDriveHeight / 11);
+	anchorPath.moveTo(hardDriveWidth / 12, hardDriveHeight / 18);
+	anchorPath.lineTo(hardDriveWidth / 3, hardDriveHeight / 18);
+	// anchorPath.lineTo(hardDriveWidth / 3, hardDriveHeight / 11);
 	anchorPath.arc(hardDriveWidth / 2, hardDriveHeight / 2, hardDriveHeight / 2 - hardDriveDiskVerticalMargin, (3 * Math.PI / 2), Math.PI, true);
 	anchorPath.lineTo(hardDriveWidth / 12, hardDriveHeight / 2);
-	anchorPath.lineTo(hardDriveWidth / 12, hardDriveHeight / 12);
+	// anchorPath.lineTo(hardDriveWidth / 12, hardDriveHeight / 16);
 	anchorPath.closePath();
 
 	hardDriveContainer.append("path")
@@ -77,8 +77,37 @@
 
 	hardDriveContainer.append("path")
 		.attr("d", needlePath)
-		.attr("stroke", "lightgray")
+		.attr("stroke", "black")
 		.attr("fill", "lightgray");
+
+	hardDriveContainer.append("circle")
+		.attr("r", hardDriveRivetRadius)
+		.attr("cx", hardDriveWidth / 30)
+		.attr("cy", hardDriveHeight / 20)
+		.attr("stroke", "black")
+		.attr("fill", "#607080");
+
+	hardDriveContainer.append("circle")
+		.attr("r", hardDriveRivetRadius)
+		.attr("cx", hardDriveWidth - hardDriveWidth / 30)
+		.attr("cy", hardDriveHeight / 20)
+		.attr("stroke", "black")
+		.attr("fill", "#607080");
+
+	hardDriveContainer.append("circle")
+		.attr("r", hardDriveRivetRadius)
+		.attr("cx", hardDriveWidth / 30)
+		.attr("cy", hardDriveHeight - hardDriveHeight / 20)
+		.attr("stroke", "black")
+		.attr("fill", "#607080");
+
+	hardDriveContainer.append("circle")
+		.attr("r", hardDriveRivetRadius)
+		.attr("cx", hardDriveWidth - hardDriveWidth / 30)
+		.attr("cy", hardDriveHeight - hardDriveHeight / 20)
+		.attr("stroke", "black")
+		.attr("fill", "#607080");
+
 
 	d3.queue()
 		.defer(d3.json, "{% url 'womens_data' %}")
