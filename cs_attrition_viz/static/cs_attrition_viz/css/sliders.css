@@ -1,17 +1,7 @@
 body {
   font-family: Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
-  margin: 0 auto;
-  }
-
-h1 {
-  margin-left: 20px;
-  display: inline-block;
-  content:"";
-  font-size: 32px;
-  font-weight: 200;
-  height: 13px;
-  margin-top: 10px;
+  margin: 0;
 }
 
 p {
@@ -57,9 +47,9 @@ p {
 }*/
 
 .handle {
-  fill: #ffffff;
-  stroke: #A5526A;
-  stroke-width: 3px;
+  fill: #607080;
+  stroke: black;
+  stroke-width: 2px;
   cursor: pointer;
 }
 

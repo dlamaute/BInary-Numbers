@@ -9,11 +9,11 @@
 {% endblock %}
 
 {% block page_content %}
-<h1>Populations</h1>
+<h1>Reformatting the Workforce</h1>
 
 <div class="two-col-container">
 	<div class="detail">
-		<p class="detail-text">Explanation</p>
+		<p id="population-detail" class="detail-text">Explanation</p>
 	</div>
 	<div class="viz-container">
 		<div id="hard-drive-id"></div>
@@ -80,6 +80,7 @@
 		.attr("stroke", "black")
 		.attr("fill", "lightgray");
 
+	// Hard Drive Rivets
 	hardDriveContainer.append("circle")
 		.attr("r", hardDriveRivetRadius)
 		.attr("cx", hardDriveWidth / 30)
@@ -107,7 +108,6 @@
 		.attr("cy", hardDriveHeight - hardDriveHeight / 20)
 		.attr("stroke", "black")
 		.attr("fill", "#607080");
-
 
 	d3.queue()
 		.defer(d3.json, "{% url 'womens_data' %}")
@@ -145,8 +145,6 @@
 			})
 			.attr("d", arc);
 
-		console.log("made donut chart");  // TODO: remove
-
 		const years = Object.keys(yearsToGenderPops);
 		const startYear = years[0];
 		const endYear = years[years.length - 1];
@@ -162,6 +160,8 @@
 			.call(yearSlider)
 			.classed("sub-viz-container", true);
 		yearSliderContainer.append("div").classed("slider-label", true).text("Year");
+
+
 
 	}
 

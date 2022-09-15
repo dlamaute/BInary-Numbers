@@ -10,8 +10,9 @@ text {
 
 h1 {
 	width: 100%;
-	margin: 4% auto;
+	margin: 2% auto;
 	text-align: center;
+	font-weight: bold;
 }
 
 .two-col-container {
@@ -23,7 +24,7 @@ h1 {
 .detail {
 	position: relative;
 	margin-top: 0;
-	margin-left: 5%;
+	margin-left: 10%;
 }
 
 .detail-text {
