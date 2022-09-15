@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block page_content %}
-<h1>Poorly Reformatting the Workforce</h1>
+<h1>Reformatting the Workforce</h1>
 
 <div class="two-col-container">
 	<div class="detail">
@@ -35,6 +35,7 @@
 	const colorMen = "#00C4AA";
 
 	const transitionDuration = 200;
+	var firstUpdate = true;
 
 	var hardDriveContainer = d3.select("#hard-drive-id")
 		.append("svg")
@@ -103,6 +104,20 @@
 		.innerRadius(hardDriveHeight / 4 - hardDriveDiskVerticalMargin)
 		.outerRadius(hardDriveHeight / 2 - hardDriveDiskVerticalMargin);
 
+	var needlePath = d3.path();
+	needlePath.moveTo(hardDriveWidth / 6 + hardDriveNeedleOffset, hardDriveHeight / 5);
+	needlePath.lineTo(hardDriveWidth / 2, hardDriveHeight / 2);
+	needlePath.lineTo(hardDriveWidth / 6 - hardDriveNeedleOffset, hardDriveHeight / 5 + hardDriveNeedleOffset);
+	needlePath.arcTo(hardDriveWidth / 6 - hardDriveNeedleOffset, hardDriveHeight / 5 - hardDriveNeedleOffset, hardDriveWidth / 6 + hardDriveNeedleOffset, hardDriveHeight / 5, hardDriveNeedleOffset);
+	needlePath.closePath();
+
+	hardDriveContainer.append("g")
+		.attr("id", "needle")
+		.append("path")
+		.attr("d", needlePath)
+		.attr("stroke", "black")
+		.attr("fill", "lightgray");
+
 	d3.queue()
 		.defer(d3.json, "{% url 'womens_data' %}")
 		.defer(d3.json, "{% url 'mens_data' %}")
@@ -131,67 +146,110 @@
 			.classed("sub-viz-container", true);
 		yearSliderContainer.append("div").classed("slider-label", true).text("Year");
 
+		var mostRecentlySelectedYear;
 		updatePieChart(startYear);
 
 		function updatePieChart(year) {
-			var donutChartPath = donutChartContainer.append("g")
-				.classed("hard-drive-disk", true)
-				.selectAll("path");
+			if (!mostRecentlySelectedYear || mostRecentlySelectedYear != year) {
+				mostRecentlySelectedYear = year;
+				var donutChartPath = donutChartContainer.selectAll("path");
+				// var originalPath = donutChartPath.data();
+				var newPath = donutChart(yearsToGenderPops[year]);
 
-			// var originalData = donutChartPath.data();
-			var newData = donutChart(yearsToGenderPops[year]);
+				donutChartPath = donutChartPath.data(newPath, function(d) { 
+						return d.data.year; 
+					});
 
-			donutChartPath = donutChartPath.data(newData);
+				console.log(donutChartPath.data(), donutChartPath.size(),donutChartPath.exit().data(), donutChartPath.exit().size());
 
-			// donutChartPath.transition()
-			// 	.duration(transitionDuration)
-			// 	.attrTween("d", arcTween)
+				// donutChartPath.transition()
+				// 	.duration(transitionDuration)
+				// 	.attrTween("d", arcTween)
 
-			donutChartPath.enter()
-				.append("path")
-				// .each(function(d, i) {
-				// 	if (i == 1) {
-				// 		this._current = newData[0];
-				// 		this._previous = newData[0];
-				// 	}
-				// 	else {
-				// 		this._current = d;
-				// 	}
-				// })
-				.attr("fill", function(d, i) {
-					if (d.data.gender == "women") {
-						return colorWomen;
-					}
-					return colorMen;
-				})
-				.attr("d", arc);
-				// .transition()
-				// .duration(transitionDuration)
-				// .attrTween("d", arcTween);
+				donutChartPath = donutChartPath.enter()
+					.append("path")
+					.attr("fill", function(d, i) {
+						if (d.data.gender == "women") {
+							return colorWomen;
+						}
+						return colorMen;
+					})
+					.merge(donutChartPath)
+					.attr("d", arc);
 
-			donutChartPath.exit()
-				// .transition()
-				// .duration(transitionDuration)
-				// .attrTween("d", function(d, i) {
-				// 	var currentIndex = this._previous.data.year;
-				// 	var interpolator = d3.interpolateObject(d, this._previous);
-				// 	return function(t) {
-				// 		return arc(interpolator(t));
-				// 	}
-				// })
+				console.log(donutChartPath.data(), donutChartPath.size(),donutChartPath.exit().data());
+
+				// console.log("first update");
+				// if (firstUpdate) {
+				// 	console.log("first update");
+				// 	donutChartPath.data(newPath)
+				// 		.enter()
+				// 		.append("path")
+				// 		.attr("class", "hard-drive-disk-arc")
+				// 		.attr("fill", function(d, i) {
+				// 			if (d.data.gender == "women") {
+				// 				return colorWomen;
+				// 			}
+				// 			return colorMen;
+				// 		})
+				// 		.attr("d", arc);
+				// }
+				// else
+				// {
+				// 	console.log("subsequent");
+				// 	donutChartPath.data(newPath)
+				// 		.enter()
+				// 		.selectAll(".hard-drive-disk-arc")
+				// 		.attr("fill", function(d, i) {
+				// 			if (d.data.gender == "women") {
+				// 				return colorWomen;
+				// 			}
+				// 			return colorMen;
+				// 		})
+				// 		.attr("d", arc);
+				// }
+
+					// .selectAll(".hard-drive-disk")
+					// .append("path")
+					// .classed("hard-drive-disk", true)
+					// .each(function(d, i) {
+					// 	if (i == 1) {
+					// 		this._current = newPath[0];
+					// 		this._previous = newPath[0];
+					// 	}
+					// 	else {
+					// 		this._current = d;
+					// 	}
+					// })
+				// donutChartPath
+				// 	.attr("fill", function(d, i) {
+				// 		if (d.data.gender == "women") {
+				// 			return colorWomen;
+				// 		}
+				// 		return colorMen;
+				// 	})
+				// 	.attr("d", arc);
+					// .transition()
+					// .duration(transitionDuration)
+					// .attrTween("d", arcTween);
+
+				donutChartPath = donutChartPath.exit()
+					// .transition()
+					// .duration(transitionDuration)
+					// .attrTween("d", function(d, i) {
+					// 	var currentIndex = this._previous.data.year;
+					// 	var interpolator = d3.interpolateObject(d, this._previous);
+					// 	return function(t) {
+					// 		return arc(interpolator(t));
+					// 	}
+					// })
 				.remove();
 
-		var needlePath = d3.path();
-			needlePath.moveTo(hardDriveWidth / 6 + hardDriveNeedleOffset, hardDriveHeight / 5);
-			needlePath.lineTo(hardDriveWidth / 2, hardDriveHeight / 2);
-			needlePath.lineTo(hardDriveWidth / 6 - hardDriveNeedleOffset, hardDriveHeight / 5 + hardDriveNeedleOffset);
-			needlePath.arcTo(hardDriveWidth / 6 - hardDriveNeedleOffset, hardDriveHeight / 5 - hardDriveNeedleOffset, hardDriveWidth / 6 + hardDriveNeedleOffset, hardDriveHeight / 5, hardDriveNeedleOffset);
-			needlePath.closePath();
+				firstUpdate = false;
 
-			hardDriveContainer.append("path")
-				.attr("d", needlePath)
-				.attr("stroke", "black")
-				.attr("fill", "lightgray");
+				console.log(donutChartPath.data(), donutChartPath.size(),donutChartPath.exit().data());
+			}
+
 		}
 
 		function arcTween(d) {
@@ -224,8 +282,8 @@
 		});
 
 		for (let i = 0; i < years.length; i++) {
-			const womenToPops = {"gender": "women"};
-			const menToPops = {"gender": "men"};
+			const womenToPops = {"gender": "women", "year": years[i]};
+			const menToPops = {"gender": "men", "year": years[i]};
 			womenToPops.population = womanPops[i];
 			menToPops.population = manPops[i];
 			yearsToGenderPops[years[i]] = [womenToPops, menToPops];
