@@ -35,7 +35,6 @@
 	const colorMen = "#00C4AA";
 
 	const transitionDuration = 200;
-	var firstUpdate = true;
 
 	var hardDriveContainer = d3.select("#hard-drive-id")
 		.append("svg")
@@ -152,100 +151,55 @@
 		function updatePieChart(year) {
 			if (!mostRecentlySelectedYear || mostRecentlySelectedYear != year) {
 				mostRecentlySelectedYear = year;
-				var donutChartPath = donutChartContainer.selectAll("path");
-				// var originalPath = donutChartPath.data();
+				var donutChartPath = donutChartContainer.selectAll("path")
+					.classed("hard-drive-disk", true);
+				var oldPath = donutChartPath.data();
 				var newPath = donutChart(yearsToGenderPops[year]);
 
 				donutChartPath = donutChartPath.data(newPath, function(d) { 
 						return d.data.year; 
 					});
 
+				donutChartPath.exit().remove();
+
 				console.log(donutChartPath.data(), donutChartPath.size(),donutChartPath.exit().data(), donutChartPath.exit().size());
 
-				// donutChartPath.transition()
-				// 	.duration(transitionDuration)
-				// 	.attrTween("d", arcTween)
+				donutChartPath.transition()
+					.duration(transitionDuration)
+					.attrTween("d", arcTween)
 
-				donutChartPath = donutChartPath.enter()
+				donutChartPath.enter()
 					.append("path")
+					.classed("hard-drive-disk", true)
+					.each(function(d, i) {
+						if (i == 1) {
+							this._current = oldPath[1];
+							this._previous = oldPath[1];
+						}
+						else {
+							this._current = d;
+						}
+					})
 					.attr("fill", function(d, i) {
 						if (d.data.gender == "women") {
 							return colorWomen;
 						}
 						return colorMen;
 					})
-					.merge(donutChartPath)
-					.attr("d", arc);
+					.transition()
+					.duration(transitionDuration)
+					.attrTween("d", arcTween);
 
-				console.log(donutChartPath.data(), donutChartPath.size(),donutChartPath.exit().data());
-
-				// console.log("first update");
-				// if (firstUpdate) {
-				// 	console.log("first update");
-				// 	donutChartPath.data(newPath)
-				// 		.enter()
-				// 		.append("path")
-				// 		.attr("class", "hard-drive-disk-arc")
-				// 		.attr("fill", function(d, i) {
-				// 			if (d.data.gender == "women") {
-				// 				return colorWomen;
-				// 			}
-				// 			return colorMen;
-				// 		})
-				// 		.attr("d", arc);
-				// }
-				// else
-				// {
-				// 	console.log("subsequent");
-				// 	donutChartPath.data(newPath)
-				// 		.enter()
-				// 		.selectAll(".hard-drive-disk-arc")
-				// 		.attr("fill", function(d, i) {
-				// 			if (d.data.gender == "women") {
-				// 				return colorWomen;
-				// 			}
-				// 			return colorMen;
-				// 		})
-				// 		.attr("d", arc);
-				// }
-
-					// .selectAll(".hard-drive-disk")
-					// .append("path")
-					// .classed("hard-drive-disk", true)
-					// .each(function(d, i) {
-					// 	if (i == 1) {
-					// 		this._current = newPath[0];
-					// 		this._previous = newPath[0];
-					// 	}
-					// 	else {
-					// 		this._current = d;
-					// 	}
-					// })
-				// donutChartPath
-				// 	.attr("fill", function(d, i) {
-				// 		if (d.data.gender == "women") {
-				// 			return colorWomen;
-				// 		}
-				// 		return colorMen;
-				// 	})
-				// 	.attr("d", arc);
-					// .transition()
-					// .duration(transitionDuration)
-					// .attrTween("d", arcTween);
-
-				donutChartPath = donutChartPath.exit()
-					// .transition()
-					// .duration(transitionDuration)
-					// .attrTween("d", function(d, i) {
-					// 	var currentIndex = this._previous.data.year;
-					// 	var interpolator = d3.interpolateObject(d, this._previous);
-					// 	return function(t) {
-					// 		return arc(interpolator(t));
-					// 	}
-					// })
+				donutChartPath.exit()
+					.transition()
+					.duration(transitionDuration)
+					.attrTween("d", function(d, i) {
+						var interpolator = d3.interpolateObject(d, this._previous);
+						return function(t) {
+							return arc(interpolator(t));
+						}
+					})
 				.remove();
-
-				firstUpdate = false;
 
 				console.log(donutChartPath.data(), donutChartPath.size(),donutChartPath.exit().data());
 			}
