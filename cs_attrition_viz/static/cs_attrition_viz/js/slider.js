@@ -46,8 +46,10 @@ function sliderFactory(d) {
       svg = p.append("svg")
       svg.attr("viewBox", "0 0 " + width + " " + height)
         .attr("preserveAspectRatio", "xMinYMin meet")
+        /* Commented out by Sid Lamaute */
         // .attr("width", width)
         // .attr("height", height)
+        /* End Comment by Sid Lamaute */
 
       let track = svg.append("g")
         .attr("class", "slider")
@@ -122,10 +124,21 @@ function sliderFactory(d) {
       function dragSlider(svg) {
         let slider=d3.select(svg)
         let d = getMousePos(orient);
+        /* Added by Sid Lamaute */
         if (customTicks) {
-          rounded = d + step/2 - (d+step/2) % step; // TODO: change
+          rounded = d + step/2 - (d+step/2) % step;
+          if (!customTicks.includes(rounded.toString())) {
+            let lower = rounded - 1;
+            if (customTicks.includes(lower.toString())) {
+              rounded -= 1;
+            }
+            else {
+              rounded += 1;
+            }
+          }
         }
         else {
+        /* End added by Sid Lamaute */
           rounded = d + step/2 - (d+step/2) % step;
         }
         console.log("rounded",rounded)
@@ -218,7 +231,7 @@ function sliderFactory(d) {
 
     function transHandle(orient) {
       return{
-        "horizontal":"translate("+(sliderScale(rounded)+2)+",0)",
+        "horizontal":"translate("+(sliderScale(rounded)+1)+",0)",
         "vertical":"translate(0,"+(sliderScale(rounded))+")"
       }[orient]
     }
