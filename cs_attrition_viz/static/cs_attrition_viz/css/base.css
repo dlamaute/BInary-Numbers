@@ -1,6 +1,10 @@
+text {
+	font-family: Helvetica, Arial, sans-serif;
+}
+
 h1 {
 	margin: 0 auto;
-	font-family: Helvetica, Arial, sans-serif;
+	text-align: center;
 }
 
 .detail {

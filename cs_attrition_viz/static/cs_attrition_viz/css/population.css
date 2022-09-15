@@ -21,5 +21,9 @@ svg .hard-drive-disk {
 
 .slider-label {
 	position: relative;
-	margin: 10px auto;
+	width: 50%;
+	margin: 5px auto;
+	text-align: center;
+	color: black;
+	font-size: 20px;
 }

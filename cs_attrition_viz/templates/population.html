@@ -19,11 +19,12 @@
 </div>
 
 <script>
-	var hardDriveWidth = 350;
-	var hardDriveHeight = 200;
-	var hardDriveBorderRadius = hardDriveWidth / 50;
-	var hardDriveDiskVerticalMargin = 10;
-	var yearSliderHeight = 60;
+	const hardDriveWidth = 350;
+	const hardDriveHeight = 200;
+	const hardDriveBorderRadius = hardDriveWidth / 50;
+	const hardDriveDiskVerticalMargin = 10;
+	const hardDriveNeedleOffset = 5;
+	const yearSliderHeight = 60;
 
 	/* Colors borrowed from https://www.telegraph.co.uk/women/business/women-mean-business-interactive/ */
 	var colorWomen = "#8700F9";
@@ -55,6 +56,24 @@
 	var donutChartContainer = hardDriveContainer.append("g")
 		.attr("transform", "translate(" + ( 2 * hardDriveWidth / 3 ) + "," + hardDriveHeight / 2 + ")");
 
+	var needlePath = d3.path();
+	needlePath.moveTo(hardDriveWidth / 6 + hardDriveNeedleOffset, hardDriveHeight / 5);
+	needlePath.lineTo(hardDriveWidth / 2, hardDriveHeight / 2);
+	needlePath.lineTo(hardDriveWidth / 6 - hardDriveNeedleOffset, hardDriveHeight / 5 + hardDriveNeedleOffset);
+	needlePath.arcTo(hardDriveWidth / 6 - hardDriveNeedleOffset, hardDriveHeight / 5 - hardDriveNeedleOffset, hardDriveWidth / 6 + hardDriveNeedleOffset, hardDriveHeight / 5, hardDriveNeedleOffset);
+	needlePath.closePath();
+
+	hardDriveContainer.append("path")
+		.attr("d", needlePath)
+		.attr("stroke", "lightgray")
+		.attr("fill", "lightgray");
+
+	var anchorPath = d3.path();
+	anchorPath.moveTo(hardDriveWidth / 12, hardDriveHeight / 12);
+	anchorPath.lineTo(hardDriveWidth / 3, hardDriveHeight / 12);
+	anchorPath.lineTo(hardDriveWidth / 3, hardDriveHeight / 11);
+	anchorPath.arc();
+
 	d3.queue()
 		.defer(d3.json, "{% url 'womens_data' %}")
 		.defer(d3.json, "{% url 'mens_data' %}")
@@ -78,7 +97,7 @@
 		const arcs = donutChart(yearsToGenderPops[year]);
 
 		donutChartContainer.append("g")
-			.attr("stroke", "white")
+			.classed("hard-drive-disk", true)
 			.selectAll("path")
 			.data(arcs)
 			.enter()
