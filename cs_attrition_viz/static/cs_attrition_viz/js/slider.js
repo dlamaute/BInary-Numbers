@@ -21,7 +21,7 @@ function sliderFactory(d) {
   svg,
   sliderScale
 
-  var parseNum = d3.format(".2g");
+  var parseNum = d3.format("d"); /* Altered by Sid Lamaute, used to be ".2g" */
 
   function drawSlider(p) {
     //console.log("drawSlider")
@@ -143,11 +143,22 @@ function sliderFactory(d) {
       }
       if (scale) {
         let axisType = getAxis(orient)
-        let axis=svg.selectAll(".sliderAxis")
-          .call(d3[axisType](sliderScale)
-          .tickSize(8)
-          .tickValues(calculateTicks(range,ticks))
-          );
+        /* Added by Sid Lamaute */
+        if (customTicks) {
+          let axis=svg.selectAll(".sliderAxis")
+            .call(d3[axisType](sliderScale)
+              .tickSize(8)
+              .tickValues(customTicks)
+            );
+        }
+        else {
+        /* End of Added by Sid Lamaute */
+          let axis=svg.selectAll(".sliderAxis")
+            .call(d3[axisType](sliderScale)
+              .tickSize(8)
+              .tickValues(calculateTicks(range,ticks))
+            );
+        }
       }
       let handle=svg.selectAll(".handle")
         .attr("transform",transHandle(orient))

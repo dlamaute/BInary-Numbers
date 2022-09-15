@@ -94,8 +94,7 @@
 		console.log(endYear);
 		const yearSlider = sliderFactory()
 			.scale(true)
-			.customTicks(years)
-			.label(true);
+			.customTicks(years);
 		let yearSliderContainer = d3.select("#yearSliderId").call(yearSlider);
 
 	}
@@ -133,5 +132,7 @@
 {% endblock %}
 
 {% comment %}
+TODO: may remove this if I don't do it...
+
 Pie chart adopted from: https://bl.ocks.org/tezzutezzu/c2653d42ffb4ecc01ffe2d6c97b2ee5e
 {% endcomment %}
