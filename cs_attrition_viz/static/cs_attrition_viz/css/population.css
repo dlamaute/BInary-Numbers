@@ -24,7 +24,7 @@
 	width: 50%;
 	margin: 0 auto;
 	text-align: center;
-	color: black;
+	color: #506070;
 	font-size: 20px;
 }
 
@@ -36,11 +36,13 @@
 .population-intro {
 	text-align: center;
 	font-size: 22px;
+	color: #506070;
 }
 
 .population-detail {
 	text-align: center;
 	font-size: 20px;
+	color: #506070;
 }
 
 .women-text {

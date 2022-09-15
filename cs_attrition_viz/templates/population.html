@@ -9,9 +9,11 @@
 {% endblock %}
 
 {% block page_content %}
-<h1>Reformatting the Workforce</h1>
+<span>
+	<a class="back-btn" href="{% url 'home' %}">Home</a><h1>Reformatting the Workforce</h1>
+</span>
 
-<div class="two-col-container">
+<div class="two-col-main-container">
 	<div class="detail-container">
 		<p class="population-intro detail-text"><b class="women-text">Women-identified</b> people comprised only</p>
 		<h2 id="women-percent" class="women-text"></h2>

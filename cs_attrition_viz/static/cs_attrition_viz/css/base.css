@@ -20,7 +20,27 @@ h2 {
 	font-size: 50px;
 }
 
-.two-col-container {
+.back-btn {
+	display: relative;
+	float: left;
+	margin-left: 10px;
+	padding: 6px 12px;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 20px;
+	font-weight: bolder;
+	border: 1px solid transparent;
+	border-radius: 5px;
+	color: white;
+	background-color: #506070;
+	text-decoration: none;
+}
+
+/*.two-col-header-container {
+	display: grid;
+	grid-template-columns: ;
+}*/
+
+.two-col-main-container {
 	display: grid;
 	grid-template-columns: 2fr 3fr;
 	grid-gap: 2%;
