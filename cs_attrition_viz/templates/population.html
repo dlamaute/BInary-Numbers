@@ -11,8 +11,10 @@
 {% block page_content %}
 <h1>Populations</h1>
 
-<div id="hardDriveId"></div>
-<div id="yearSliderId"></div>
+<div id="pop-visual-id">
+	<div id="hard-drive-id"></div>
+	<div id="year-slider-id"></div>
+</div>
 
 <div class="detail">
 	<p>Explanation</p>
@@ -25,17 +27,17 @@
 	var hardDriveDiskVerticalMargin = 10;
 	var yearSliderHeight = 8;
 
-	// Colors taken from https://www.telegraph.co.uk/women/business/women-mean-business-interactive/
+	/* Colors borrowed from https://www.telegraph.co.uk/women/business/women-mean-business-interactive/ */
 	var colorWomen = "#8700F9";
 	var colorMen = "#00C4AA";
 
 	var year = 2008; // TODO: temporary until I set up scroll
 
-	var hardDriveContainer = d3.select("#hardDriveId")
+	var hardDriveContainer = d3.select("#hard-drive-id")
 		.append("svg")
 		.attr("viewBox", "0 0 " + hardDriveWidth + " " + hardDriveHeight)
 		.attr("preserveAspectRatio", "xMinYMin meet")
-		.classed("hard-drive-container", true);
+		.classed("viz-container", true);
 
 	var hardDriveBox = hardDriveContainer.append("rect")
 		.classed("hard-drive-box", true)
@@ -90,12 +92,17 @@
 		const years = Object.keys(yearsToGenderPops);
 		const startYear = years[0];
 		const endYear = years[years.length - 1];
-		console.log(startYear);
-		console.log(endYear);
 		const yearSlider = sliderFactory()
+			.ticks(100)
 			.scale(true)
-			.customTicks(years);
-		let yearSliderContainer = d3.select("#yearSliderId").call(yearSlider);
+			.customTicks(years)
+			.range([startYear, endYear])
+			.step(1);
+		let yearSliderContainer = d3.select("#year-slider-id")
+			.call(yearSlider)
+			.attr("viewBox", "0 0 " + hardDriveWidth + " " +yearSliderHeight)
+			.attr("preserveAspectRatio", "xMinYMin meet").classed("viz-container", true);
+		yearSliderContainer.append("div").classed("slider-label", true).text("Year");
 
 	}
 

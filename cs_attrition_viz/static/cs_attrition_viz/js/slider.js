@@ -21,7 +21,17 @@ function sliderFactory(d) {
   svg,
   sliderScale
 
-  var parseNum = d3.format("d"); /* Altered by Sid Lamaute, used to be ".2g" */
+  // var parseNum = d3.format(".2g"); /* Commented out by Sid Lamaute */
+  var parseNum = d3.format("d"); /* Added by Sid Lamaute */
+  console.log(parseNum(2005));
+
+  const sliderNumberFormat = {
+    'decimal': '.',
+    'thousands': '',
+    'grouping': [],
+    'currency': ['', ''],
+  };
+  const sliderFormatLocale = d3.formatDefaultLocale(sliderNumberFormat);
 
   function drawSlider(p) {
     //console.log("drawSlider")
@@ -116,7 +126,7 @@ function sliderFactory(d) {
         
         if (label) {
           let labelText=slider.selectAll(".labelText")
-            .text(parseNum(rounded))
+            .text(parseNum(rounded));
         }
         let overlay=slider.selectAll(".track-overlay")
         if(orient=="vertical"){
@@ -149,6 +159,7 @@ function sliderFactory(d) {
             .call(d3[axisType](sliderScale)
               .tickSize(8)
               .tickValues(customTicks)
+              .tickFormat(sliderFormatLocale.format(''))
             );
         }
         else {

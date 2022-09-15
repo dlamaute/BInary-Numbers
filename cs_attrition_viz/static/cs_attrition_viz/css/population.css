@@ -1,4 +1,9 @@
-.hard-drive-container {
+div#pop-visual-id {
+	display: block;
+	position: relative;
+}
+
+.viz-container {
 	display: block;
 	position: relative;
 	width: 50%;
@@ -12,4 +17,9 @@ svg .hard-drive-box {
 svg .hard-drive-disk {
 	position: relative;
 	stroke: black; /* TODO: replace */
+}
+
+.slider-label {
+	position: relative;
+	margin: 10px auto;
 }
