@@ -34,7 +34,7 @@
 	const colorWomen = "#8700F9";
 	const colorMen = "#00C4AA";
 
-	const transitionDuration = 500;
+	const transitionDuration = 200;
 
 	var hardDriveContainer = d3.select("#hard-drive-id")
 		.append("svg")
@@ -125,70 +125,60 @@
 			.customTicks(years)
 			.range([startYear, endYear])
 			.step(1)
-			.dragHandler(function(d) { updatePie(d.value()); });
+			.dragHandler(function(d) { updatePieChart(d.value()); });
 		let yearSliderContainer = d3.select("#year-slider-id")
 			.call(yearSlider)
 			.classed("sub-viz-container", true);
 		yearSliderContainer.append("div").classed("slider-label", true).text("Year");
 
-		updatePie(startYear);
+		updatePieChart(startYear);
 
-		function updatePie(year) {
+		function updatePieChart(year) {
 			var donutChartPath = donutChartContainer.append("g")
 				.classed("hard-drive-disk", true)
 				.selectAll("path");
 
-			var originalData = donutChartPath.data();
+			// var originalData = donutChartPath.data();
 			var newData = donutChart(yearsToGenderPops[year]);
 
 			donutChartPath = donutChartPath.data(newData);
 
-			// TODO: remove these
-			console.log(originalData);
-			console.log(newData);
-
-			// const arcs = donutChart(yearsToGenderPops[year]);
-			// replace thing here
-			//	.data(arcs)
-
-			donutChartPath.transition()
-				.duration(transitionDuration)
-				.attrTween("d", arcTween)
+			// donutChartPath.transition()
+			// 	.duration(transitionDuration)
+			// 	.attrTween("d", arcTween)
 
 			donutChartPath.enter()
 				.append("path")
-				.each(function(d, i) {
-					console.log(d);
-					var neighborArc = findNeighborArc(i, originalData, newData);
-					if (neighborArc) {
-						this._current = neighborArc;
-						this._previous = neighborArc;
-					}
-					else {
-						this._current = d;
-					}
-				})
+				// .each(function(d, i) {
+				// 	if (i == 1) {
+				// 		this._current = newData[0];
+				// 		this._previous = newData[0];
+				// 	}
+				// 	else {
+				// 		this._current = d;
+				// 	}
+				// })
 				.attr("fill", function(d, i) {
 					if (d.data.gender == "women") {
 						return colorWomen;
 					}
 					return colorMen;
 				})
-				.transition()
-				.duration(transitionDuration)
-				.attrTween("d", arcTween)
-				// .attr("d", arc);
+				.attr("d", arc);
+				// .transition()
+				// .duration(transitionDuration)
+				// .attrTween("d", arcTween);
 
 			donutChartPath.exit()
-				.transition()
-				.duration(transitionDuration)
-				.attrTween("d", function(d, i) {
-					var currentIndex = this._previous.data.year;
-					var interpolator = d3.interpolateObject(d, this._previous);
-					return function(t) {
-						return arc(interpolator(t));
-					}
-				})
+				// .transition()
+				// .duration(transitionDuration)
+				// .attrTween("d", function(d, i) {
+				// 	var currentIndex = this._previous.data.year;
+				// 	var interpolator = d3.interpolateObject(d, this._previous);
+				// 	return function(t) {
+				// 		return arc(interpolator(t));
+				// 	}
+				// })
 				.remove();
 
 		var needlePath = d3.path();
@@ -204,14 +194,12 @@
 				.attr("fill", "lightgray");
 		}
 
-		function findNeighborArc(index, originalData, newData) {
-			var datum = findFollowing(index, originalData, newData);
-			if (datum) {
-				var datumClone = basicCloneObject(datum);
-				datumClone.endAngle = datum.startAngle;
-				return datumClone;
+		function arcTween(d) {
+			var interpolator = d3.interpolate(this._current, d);
+			this._current = interpolator(0);
+			return function(t) {
+				return arc(interpolator(t));
 			}
-			return null;
 		}
 
 	}
@@ -245,34 +233,6 @@
 
 		return yearsToGenderPops;
 	}
-
-	function findFollowing(index, originalData, newData) {
-		var newDataLength = newData.length;
-		var originalDataLength = originalData.length;
-		while (++index < newDataLength) {
-			for (var j = 0; j < originalDataLength; ++j) {
-				if (originalData[j] === newData[i]) return originalData[j];
-			}
-		}
-
-	}
-
-	function arcTween(d) {
-		var interpolator = d3.interpolate(this._current, d);
-		this._current = interpolator(0);
-		return function(t) {
-			return arc(interpolator(t));
-		}
-	}
-
-	function basicCloneObject(originalObject) {
-		var newObject = {};
-		for (var i in originalObject) {
-			newObject[i] = originalObject[i];
-		}
-		return newObject;
-	}
-
 </script>
 {% endblock %}
 

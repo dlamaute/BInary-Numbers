@@ -22,8 +22,8 @@
 .slider-label {
 	position: relative;
 	width: 50%;
-	margin: 5px auto;
+	margin: 0 auto;
 	text-align: center;
 	color: black;
-	font-size: 20px;
+	font-size: 16px;
 }
