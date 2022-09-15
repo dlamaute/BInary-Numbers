@@ -1,20 +1,23 @@
-div#pop-visual-id {
-	display: block;
+.viz-container {
+	display: inline-block;
 	position: relative;
+	float: right;
+	width: 50%;
+	margin-top: 0;
+	margin-right: 5%;
 }
 
-.viz-container {
+.sub-viz-container {
 	display: block;
 	position: relative;
-	width: 50%;
 	margin: 0 auto;
 }
 
-svg .hard-drive-box {
+.hard-drive-box {
 	fill: slategray;
 }
 
-svg .hard-drive-disk {
+.hard-drive-disk {
 	position: relative;
 	stroke: black; /* TODO: replace */
 }

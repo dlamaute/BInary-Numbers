@@ -1,17 +1,25 @@
+body {
+	margin: 0;
+	padding: 0;
+	overflow-x: hidden;
+}
+
 text {
 	font-family: Helvetica, Arial, sans-serif;
 }
 
 h1 {
-	margin: 0 auto;
+	width: 100%;
+	margin: 4% auto;
 	text-align: center;
 }
 
 .detail {
-	display: block;
+	display: inline-block;
 	position: relative;
-	width: 75%;
-	margin: 10px auto;
+	width: 50%;
+	margin-top: 0;
+	margin-left: 5%;
 }
 
 .detail-text {

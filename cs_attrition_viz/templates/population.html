@@ -11,11 +11,15 @@
 {% block page_content %}
 <h1>Populations</h1>
 
-<div id="hard-drive-id"></div>
-<div id="year-slider-id"></div>
+<div>
+	<div class="detail">
+		<p class="detail-text">Explanation</p>
+	</div>
 
-<div class="detail">
-	<p class="detail-text">Explanation</p>
+	<div class="viz-container">
+		<div id="hard-drive-id"></div>
+		<div id="year-slider-id"></div>
+	</div>
 </div>
 
 <script>
@@ -32,17 +36,11 @@
 
 	var year = 2008; // TODO: temporary until I set up scroll
 
-	// var populationVizContainer = d3.select("#pop-visual-id")
-	// 	.append("svg")
-	// 	.attr("viewBox", "0 0 " + hardDriveWidth + " " + hardDriveHeight + yearSliderHeight)
-	// 	.attr("preserveAspectRatio", "xMinYMin meet")
-	// 	.classed("viz-container", true);
-
 	var hardDriveContainer = d3.select("#hard-drive-id")
 		.append("svg")
 		.attr("viewBox", "0 0 " + hardDriveWidth + " " + hardDriveHeight)
 		.attr("preserveAspectRatio", "xMinYMin meet")
-		.classed("viz-container", true);
+		.classed("sub-viz-container", true);
 
 	var hardDriveBox = hardDriveContainer.append("rect")
 		.classed("hard-drive-box", true)
@@ -56,6 +54,20 @@
 	var donutChartContainer = hardDriveContainer.append("g")
 		.attr("transform", "translate(" + ( 2 * hardDriveWidth / 3 ) + "," + hardDriveHeight / 2 + ")");
 
+	var anchorPath = d3.path();
+	anchorPath.moveTo(hardDriveWidth / 12, hardDriveHeight / 12);
+	anchorPath.lineTo(hardDriveWidth / 3, hardDriveHeight / 12);
+	anchorPath.lineTo(hardDriveWidth / 3, hardDriveHeight / 11);
+	anchorPath.arc(hardDriveWidth / 2, hardDriveHeight / 2, hardDriveHeight / 2 - hardDriveDiskVerticalMargin, (3 * Math.PI / 2), Math.PI, true);
+	anchorPath.lineTo(hardDriveWidth / 12, hardDriveHeight / 2);
+	anchorPath.lineTo(hardDriveWidth / 12, hardDriveHeight / 12);
+	anchorPath.closePath();
+
+	hardDriveContainer.append("path")
+		.attr("d", anchorPath)
+		.attr("stroke", "black")
+		.attr("fill", "#607080");
+
 	var needlePath = d3.path();
 	needlePath.moveTo(hardDriveWidth / 6 + hardDriveNeedleOffset, hardDriveHeight / 5);
 	needlePath.lineTo(hardDriveWidth / 2, hardDriveHeight / 2);
@@ -67,12 +79,6 @@
 		.attr("d", needlePath)
 		.attr("stroke", "lightgray")
 		.attr("fill", "lightgray");
-
-	var anchorPath = d3.path();
-	anchorPath.moveTo(hardDriveWidth / 12, hardDriveHeight / 12);
-	anchorPath.lineTo(hardDriveWidth / 3, hardDriveHeight / 12);
-	anchorPath.lineTo(hardDriveWidth / 3, hardDriveHeight / 11);
-	anchorPath.arc();
 
 	d3.queue()
 		.defer(d3.json, "{% url 'womens_data' %}")
@@ -125,7 +131,7 @@
 			.step(1);
 		let yearSliderContainer = d3.select("#year-slider-id")
 			.call(yearSlider)
-			.classed("viz-container", true);
+			.classed("sub-viz-container", true);
 		yearSliderContainer.append("div").classed("slider-label", true).text("Year");
 
 	}
