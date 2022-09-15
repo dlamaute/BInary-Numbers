@@ -162,43 +162,42 @@
 
 				donutChartPath.exit().remove();
 
-				console.log(donutChartPath.data(), donutChartPath.size(),donutChartPath.exit().data(), donutChartPath.exit().size());
-
-				donutChartPath.transition()
-					.duration(transitionDuration)
-					.attrTween("d", arcTween)
+				// donutChartPath.transition()
+				// 	.duration(transitionDuration)
+				// 	.attrTween("d", arcTween)
 
 				donutChartPath.enter()
 					.append("path")
 					.classed("hard-drive-disk", true)
-					.each(function(d, i) {
-						if (i == 1) {
-							this._current = oldPath[1];
-							this._previous = oldPath[1];
-						}
-						else {
-							this._current = d;
-						}
-					})
+					// .each(function(d, i) {
+					// 	if (i == 1) {
+					// 		this._current = oldPath[1];
+					// 		this._previous = oldPath[1];
+					// 	}
+					// 	else {
+					// 		this._current = d;
+					// 	}
+					// })
 					.attr("fill", function(d, i) {
 						if (d.data.gender == "women") {
 							return colorWomen;
 						}
 						return colorMen;
 					})
-					.transition()
-					.duration(transitionDuration)
-					.attrTween("d", arcTween);
+					// .transition()
+					// .duration(transitionDuration)
+					// .attrTween("d", arcTween);
+					.attr("d", arc);
 
 				donutChartPath.exit()
-					.transition()
-					.duration(transitionDuration)
-					.attrTween("d", function(d, i) {
-						var interpolator = d3.interpolateObject(d, this._previous);
-						return function(t) {
-							return arc(interpolator(t));
-						}
-					})
+					// .transition()
+					// .duration(transitionDuration)
+					// .attrTween("d", function(d, i) {
+					// 	var interpolator = d3.interpolateObject(d, this._previous);
+					// 	return function(t) {
+					// 		return arc(interpolator(t));
+					// 	}
+					// })
 				.remove();
 
 				console.log(donutChartPath.data(), donutChartPath.size(),donutChartPath.exit().data());
