@@ -34,7 +34,9 @@
 	const colorWomen = "#8700F9";
 	const colorMen = "#00C4AA";
 
-	var year = 2008; // TODO: temporary until I set up scroll
+	const transitionDuration = 500;
+
+	// var year = 2008; // TODO: temporary until I set up scroll
 
 	var hardDriveContainer = d3.select("#hard-drive-id")
 		.append("svg")
@@ -118,32 +120,10 @@
 		if (error) throw error;
 
 		const yearsToGenderPops = getAllYearsPopulations(csWomen, csMen);
-		
-		var donutChart = d3.pie()
-			.sort(null)
-			.value(function(d) { return d.population; } )
-			.startAngle((3 * Math.PI) / 2)
-			.endAngle((7 * Math.PI) / 2);
 
 		var arc = d3.arc()
 			.innerRadius(hardDriveHeight / 4 - hardDriveDiskVerticalMargin)
 			.outerRadius(hardDriveHeight / 2 - hardDriveDiskVerticalMargin);
-
-		const arcs = donutChart(yearsToGenderPops[year]);
-
-		donutChartContainer.append("g")
-			.classed("hard-drive-disk", true)
-			.selectAll("path")
-			.data(arcs)
-			.enter()
-			.append("path")
-			.attr("fill", function(d, i) {
-				if (d.data.gender == "women") {
-					return colorWomen;
-				}
-				return colorMen;
-			})
-			.attr("d", arc);
 
 		const years = Object.keys(yearsToGenderPops);
 		const startYear = years[0];
@@ -151,17 +131,41 @@
 		const yearSlider = sliderFactory()
 			.width(hardDriveWidth)
 			.height(yearSliderHeight)
+			.value(2000)
 			.ticks(100)
 			.scale(true)
 			.customTicks(years)
 			.range([startYear, endYear])
-			.step(1);
+			.step(1)
+			.dragHandler(function(d) { updatePie(d); });
 		let yearSliderContainer = d3.select("#year-slider-id")
 			.call(yearSlider)
 			.classed("sub-viz-container", true);
 		yearSliderContainer.append("div").classed("slider-label", true).text("Year");
 
+		function updatePie(yearContainer) {
+			var donutChart = d3.pie()
+				.sort(null)
+				.value(function(d) { return d.population; } )
+				.startAngle((3 * Math.PI) / 2)
+				.endAngle((7 * Math.PI) / 2);
 
+			const arcs = donutChart(yearsToGenderPops[yearContainer.value()]);
+
+			donutChartContainer.append("g")
+				.classed("hard-drive-disk", true)
+				.selectAll("path")
+				.data(arcs)
+				.enter()
+				.append("path")
+				.attr("fill", function(d, i) {
+					if (d.data.gender == "women") {
+						return colorWomen;
+					}
+					return colorMen;
+				})
+				.attr("d", arc);
+		}
 
 	}
 
@@ -194,6 +198,7 @@
 
 		return yearsToGenderPops;
 	}
+
 </script>
 {% endblock %}
 
