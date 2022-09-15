@@ -12,8 +12,18 @@
 <h1>Reformatting the Workforce</h1>
 
 <div class="two-col-container">
-	<div class="detail">
-		<p id="population-detail" class="detail-text">Explanation</p>
+	<div class="detail-container">
+		<p class="population-intro detail-text"><b class="women-text">Women-identified</b> people comprised only</p>
+		<h2 id="women-percent" class="women-text"></h2>
+		<p class="population-intro detail-text">
+			of computer and information scientists in <span id="year" class="population-intro detail-text"></span>.
+		</p>
+		<br>
+		<br>
+		<br>
+		<p class="population-detail detail-text">
+			<b class="men-text">Male-identified</b> <span id="men-context">people comprised only more and more of the computer space in the first decade of this century.</span>
+		</p>
 	</div>
 	<div class="viz-container">
 		<div id="hard-drive-id"></div>
@@ -63,32 +73,28 @@
 
 	// Hard Drive Rivets
 	hardDriveContainer.append("circle")
+		.classed("hard-drive-rivet", true)
 		.attr("r", hardDriveRivetRadius)
 		.attr("cx", hardDriveWidth / 30)
-		.attr("cy", hardDriveHeight / 20)
-		.attr("stroke", "black")
-		.attr("fill", "#607080");
+		.attr("cy", hardDriveHeight / 20);
 
 	hardDriveContainer.append("circle")
+		.classed("hard-drive-rivet", true)
 		.attr("r", hardDriveRivetRadius)
 		.attr("cx", hardDriveWidth - hardDriveWidth / 30)
-		.attr("cy", hardDriveHeight / 20)
-		.attr("stroke", "black")
-		.attr("fill", "#607080");
+		.attr("cy", hardDriveHeight / 20);
 
 	hardDriveContainer.append("circle")
+		.classed("hard-drive-rivet", true)
 		.attr("r", hardDriveRivetRadius)
 		.attr("cx", hardDriveWidth / 30)
-		.attr("cy", hardDriveHeight - hardDriveHeight / 20)
-		.attr("stroke", "black")
-		.attr("fill", "#607080");
+		.attr("cy", hardDriveHeight - hardDriveHeight / 20);
 
 	hardDriveContainer.append("circle")
+		.classed("hard-drive-rivet", true)
 		.attr("r", hardDriveRivetRadius)
 		.attr("cx", hardDriveWidth - hardDriveWidth / 30)
-		.attr("cy", hardDriveHeight - hardDriveHeight / 20)
-		.attr("stroke", "black")
-		.attr("fill", "#607080");
+		.attr("cy", hardDriveHeight - hardDriveHeight / 20);
 
 	var donutChartContainer = hardDriveContainer.append("g")
 		.attr("transform", "translate(" + ( 2 * hardDriveWidth / 3 ) + "," + hardDriveHeight / 2 + ")");
@@ -139,18 +145,33 @@
 			.customTicks(years)
 			.range([startYear, endYear])
 			.step(1)
-			.dragHandler(function(d) { updatePieChart(d.value()); });
+			.dragHandler(function(d) { updateYearData(d.value()); });
 		let yearSliderContainer = d3.select("#year-slider-id")
 			.call(yearSlider)
 			.classed("sub-viz-container", true);
 		yearSliderContainer.append("div").classed("slider-label", true).text("Year");
 
 		var mostRecentlySelectedYear;
-		updatePieChart(startYear);
+		updateYearData(startYear);
 
-		function updatePieChart(year) {
+		function updateYearData(year) {
 			if (!mostRecentlySelectedYear || mostRecentlySelectedYear != year) {
 				mostRecentlySelectedYear = year;
+
+				// Text
+				d3.select("#women-percent").text(getPercentWomenPopulation(yearsToGenderPops)[year]);
+
+				d3.select("#year").text(year);
+
+				var menContext = d3.select("#men-context");
+				if (parseInt(year) > 2010) {
+					menContext.text(" people largely held their share of space in the industry in the second decade of this century.")
+				}
+				else {
+					menContext.text(" people comprised only more and more of the computer space in the first decade of this century.")
+				}
+
+				// Chart
 				var donutChartPath = donutChartContainer.selectAll("path")
 					.classed("hard-drive-disk", true);
 				var oldPath = donutChartPath.data();
@@ -244,11 +265,20 @@
 
 		return yearsToGenderPops;
 	}
+
+	function getPercentWomenPopulation(yearsToGenderPops) {
+		const percentPerYear = {};
+
+		for (const year in yearsToGenderPops) {
+			const womenPop = yearsToGenderPops[year][0].population;
+			const menPop = yearsToGenderPops[year][1].population;
+			const percent = (womenPop / (womenPop + menPop)) * 100;
+			const percentFormatter = d3.format(".2f");
+			percentPerYear[year] = percentFormatter(percent) + "%";
+		}
+
+		return percentPerYear;
+	}
+
 </script>
 {% endblock %}
-
-{% comment %}
-TODO: may remove this if I don't do it...
-
-Pie chart adopted from: https://bl.ocks.org/tezzutezzu/c2653d42ffb4ecc01ffe2d6c97b2ee5e
-{% endcomment %}

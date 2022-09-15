@@ -12,16 +12,24 @@ h1 {
 	font-family: "Courier";
 }
 
+h2 {
+	width: 100%;
+	margin: 10px auto;
+	text-align: center;
+	font-weight: bold;
+	font-size: 50px;
+}
+
 .two-col-container {
 	display: grid;
 	grid-template-columns: 2fr 3fr;
 	grid-gap: 2%;
-	padding: 3%;
+	padding: 3% 3% 0 3%;
 }
 
-.detail {
+.detail-container {
 	position: relative;
-	margin-top: 0;
+	margin-top: 5%;
 	margin-left: 10%;
 }
 
