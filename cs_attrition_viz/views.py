@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.db.models import F
+from django.contrib import admin
 from cs_attrition_viz import models
 
 
@@ -28,39 +29,34 @@ Data retrieval methods
 relevant_data_columns = ['year', 'num_employees_nsf', 'salary_nsf', 'num_recent_grad_employees', 'num_recent_grad_nonstem']
 relevant_source_columns = ['year', 'num_employees_nsf_source', 'salary_nsf_source', 'num_recent_grad_employees_source', 'num_recent_grad_nonstem_source']
 
-def source_data(modeladmin, request, queryset):
-	cs_women = CsWomen.objects.values('year', cs_women_num_employees_nsf=F('num_employees_nsf'), cs_women_salary_nsf=F('salary_nsf'), cs_women_num_recent_grad_employees=F('num_recent_grad_employees'), cs_women_num_recent_grad_nonstem=('num_recent_grad_nonstem'))
-	cs_men = CsMen.objects.values('year', cs_men_num_employees_nsf=F('num_employees_nsf'), cs_men_salary_nsf=F('salary_nsf'), cs_men_num_recent_grad_employees=F('num_recent_grad_employees'), cs_men_num_recent_grad_nonstem=('num_recent_grad_nonstem'))
-
-	if not request.user.is_advocacy_member:
-		raise PermissionDenied
-	metadata = queryset.model._meta
-	model = queryset.model
-	response = HttpResponse(
-		content_type='text/csv',
-		headers={'Content-Disposition': 'attachment; filename="cs_government_gender_data.csv"'},
+def source_data(request):
+	cs_women = models.CsWomen.objects.values(
+		'year',
+		cs_women_num_employees_nsf=F('num_employees_nsf'),
+		cs_women_salary_nsf=F('salary_nsf'),
+		cs_women_num_recent_grad_employees=F('num_recent_grad_employees'),
+		cs_women_num_recent_grad_nonstem=F('num_recent_grad_nonstem'),
 	)
-	csv_writer = csv.writer(response)
-	fields = [field.name for fields in metadata.fields]
-	csv_writer.writerow(fields)
-	for query_response_object in queryset:
-		csv_writer.writerow([get_attr(query_response_object, field) for field in fields])
-	return response
-
-
-def data_source_table(modeladmin, request, queryset):
-	metadata = queryset.model._meta
-	model = queryset.model
-	response = HttpResponse(
-		content_type='text/csv',
-		headers={'Content-Disposition': 'attachment; filename="cs_government_gender_data.csv"'},
+	cs_men = models.CsMen.objects.values(
+		'year',
+		cs_men_num_employees_nsf=F('num_employees_nsf'),
+		cs_men_salary_nsf=F('salary_nsf'),
+		cs_men_num_recent_grad_employees=F('num_recent_grad_employees'),
+		cs_men_num_recent_grad_nonstem=F('num_recent_grad_nonstem'),
 	)
-	csv_writer = csv.writer(response)
-	fields = [field.name for fields in metadata.fields]
-	csv_writer.writerow(fields)
-	for query_response_object in queryset:
-		csv_writer.writerow([get_attr(query_response_object, field) for field in fields])
-	return response
+	querysets = [cs_women, cs_men]
+	return create_csv_from_db_table(admin.ModelAdmin, request, querysets)
+
+
+def data_source_table(request):
+	cs_data_sources = models.Sources.objects.values(
+		'year',
+		'num_employees_nsf_source',
+		'salary_nsf_source',
+		'num_recent_grad_employees_source',
+		'num_recent_grad_nonstem_source',
+	)
+	return create_csv_from_db_table(admin.ModelAdmin, request, [cs_data_sources])
 
 
 def womens_data(request):
@@ -70,25 +66,30 @@ def womens_data(request):
 
 def mens_data(request):
 	men = models.CsMen.objects.all().values()
-	# context = {
-	# 	'women': women,
-	# 	'men': men
-	# }
 	return JsonResponse(list(men), safe=False)
 
 
 """
 Helper Functions
 """
-def create_csv_from_db_table(modeladmin, request, queryset, relabel_conflicting_fields=False):
+def create_csv_from_db_table(modeladmin, request, querysets):
 	if not request.user.is_advocacy_member:
 		raise PermissionDenied
-	metadata = queryset.model._meta
-	model = queryset.model
 	response = HttpResponse(
 		content_type='text/csv',
 		headers={'Content-Disposition': 'attachment; filename="cs_government_gender_data.csv"'},
 	)
-	csv_writer.csv.writer(response)
-	if (relabel_conflicting_fields):
+	csv_writer.csv.writer(response, delimiter=";")
+	all_fields = []
+	for queryset in querysets:
+		metadata = queryset.model._meta
+		model = queryset.model
+		all_fieldnames.extend(queryset.first().keys())
+	csv_writer.writerow(all_fieldnames)
+	for i, query_response_object in enumerate(querysets[0]):
+		row = []
+		for queryset in querysets:
+			row.extend([get_attr(queryset[i], field) for field in queryset.first().keys()]) 
+		csv_writer.writerow(row)
+	return response
 
