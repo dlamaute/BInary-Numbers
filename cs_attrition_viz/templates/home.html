@@ -2,15 +2,41 @@
 {% load static %}
 
 {% block page_head %}
-<link rel="stylesheet" type="text/css" href="{% static 'cs_attrition_viz/home.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'cs_attrition_viz/css/home.css' %}">
+
+<style>
+.hacker-background {
+	background-image: url('{% static "cs_attrition_viz/img/matrix-style-binary-code-digital-background-with-falling-numbers/25336.jpg" %}');
+	background-repeat: no-repeat;
+	background-size: 100%;
+	width: 100%;
+	height: 100%;
+	position: relative;
+	margin: 0;
+	padding: 0;
+}
+</style>
 {% endblock %}
 
 {% block page_content %}
-<h1>Binary Numbers: Woman-Identified People in Computer Science</h1>
+<div class="hacker-background">
+	<h1 style="color: white">Binary Numbers: Woman-Identified People in Computer Science</h1>
 
-<!-- <a href="{% url 'login' %}">Log In</a>
-<a href="{% url 'signup' %}">Sign Up as an Advocacy Member</a> -->
+	{% comment %}
+	<!-- <a href="{% url 'login' %}">Log In</a> -->
+	{% endcomment %}
 
-<a class="btn" href="{% url 'data_csv' %}">Export Data</a>
-<a href="{% url 'data_sources_csv' %}">Export Sources</a>
+	<div class="download-btn-container">
+		<a class="btn download-btn" href="{% url 'population' %}">Gender Distribution</a>
+		<a class="btn download-btn" href="{% url 'salary' %}">Attrition</a>
+	</div>
+
+	<p class="data-header" style="font-family: Helvetica; font-weight: normal; color: white">Get the data:</p>
+	<div class="download-btn-container">
+		<a class="btn download-btn" href="{% url 'data_csv' %}">Export Data</a>
+		<a class="btn download-btn" href="{% url 'data_sources_csv' %}">Export Sources</a>
+	</div>
+
+	<p style="text-align: center; font-family: 'Helvetica'; color: white;">Image source: <a href="https://www.freepik.com/free-vector/matrix-style-binary-code-digital-background-with-falling-numbers_8289995.htm#query=binary%20code%20matrix&position=0&from_view=keyword">Image by starline</a> on Freepik</p>
+</div>
 {% endblock %}

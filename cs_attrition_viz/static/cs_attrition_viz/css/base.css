@@ -39,16 +39,14 @@ h2 {
 }
 
 .btn-home {
-	/*float: left;*/
 	margin-left: 10px;
 }
 
 .btn-viz {
-	/*float: right;*/
 	margin-right: 10px;
 }
 
-.two-col-header-container {
+.three-col-header-container {
 	display: grid;
 	grid-auto-flow: column;
 	grid-template-columns: auto minmax(0, 1fr) auto;

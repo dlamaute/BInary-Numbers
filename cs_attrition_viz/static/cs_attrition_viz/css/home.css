@@ -1,3 +1,11 @@
-h1 {
-	font-family: Helvetica, Arial, sans-serif;
+.download-btn-container {
+	display: block;
+	position: relative;
+	width: 100%;
+}
+
+.download-btn {
+	display: inline-block;
+	position: relative;
+	margin: 10px auto;
 }

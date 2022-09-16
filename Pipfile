@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 mysqlclient = ">=1.4.0"
+django = "*"
 
 [dev-packages]
 
