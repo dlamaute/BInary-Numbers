@@ -8,7 +8,7 @@ from ..models import AdvocacyMember
 class AdvocacyMemberSignUpView(CreateView):
 	model = AdvocacyMember
 	form_class = SignUpForm
-	template_name = 'registration/signup.html'
+	template_name = '../templates/signup.html'
 
 	def get_context_data(self, **kwargs):
 		kwargs['user_type'] = 'advocacy_member'

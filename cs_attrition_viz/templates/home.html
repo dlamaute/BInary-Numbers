@@ -1,3 +1,16 @@
+{% extends "base.html" %}
 {% load static %}
-<h1>Hello World!</h1>
+
+{% block page_head %}
 <link rel="stylesheet" type="text/css" href="{% static 'cs_attrition_viz/home.css' %}">
+{% endblock %}
+
+{% block page_content %}
+<h1>Binary Numbers: Woman-Identified People in Computer Science</h1>
+
+<!-- <a href="{% url 'login' %}">Log In</a>
+<a href="{% url 'signup' %}">Sign Up as an Advocacy Member</a> -->
+
+<a class="btn" href="{% url 'data_csv' %}">Export Data</a>
+<a href="{% url 'data_sources_csv' %}">Export Sources</a>
+{% endblock %}
