@@ -5,11 +5,12 @@ from django.db import models
 class MemberUser(AbstractUser):
     is_advocacy_member = models.BooleanField(default=False)
 
+
 class AdvocacyMember(models.Model):
     user = models.OneToOneField(MemberUser, on_delete=models.CASCADE, primary_key=True)
-    member_username = models.CharField(unique=True, max_length=30)
-    USERNAME_FIELD = 'member_username'
-    REQUIRED_FIELDS = ['USERNAME']
+
+    def __str__(self):
+        return self.user.username
 
 
 class CsWomen(models.Model):
